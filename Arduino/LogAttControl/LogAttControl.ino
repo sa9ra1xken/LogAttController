@@ -4,7 +4,9 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 #include <SPI.h>
-#include "BitOperation.h"
+#include "bit_manipulation.h"
+#include <Vrekrer_scpi_parser.h>
+//#include <MsTimer2.h>
 
 const int SCREEN_WIDTH = 128;     //ディスプレイのサイズ指定
 const int SCREEN_HEIGHT = 64;     //ディスプレイのサイズ指定
@@ -18,6 +20,8 @@ RotaryEncoder *encoder = nullptr;
 bool LAST_BUTTON_STATUS;
 
 SPISettings mySPISettings = SPISettings(8000000, LSBFIRST, SPI_MODE0);
+
+//SCPI_Parser myParser;
 
 enum Mode{
   VOLUME,
@@ -121,29 +125,29 @@ void Show(){
   switch(myMode){
 
     case VOLUME:
-      WriteHeader("Volume");
+      WriteHeader(F("Volume"));
       WriteBody(String(volume * 0.2, 1)+"dB");
     break;  
 
     case BALANCE:
       if (balance < 0){
-        WriteHeader("Right is");
+        WriteHeader(F("Right is"));
         WriteBody(String(abs(balance) * 0.2, 1)+"dB");
-        WriteFooter("lower");
+        WriteFooter(F("lower"));
       }
       else if (balance > 0){
-        WriteHeader("Left is");
+        WriteHeader(F("Left is"));
         WriteBody(String(balance * 0.2, 1)+"dB");
-        WriteFooter("lower");
+        WriteFooter(F("lower"));
       }
       else{
-        WriteHeader("Balance");
+        WriteHeader(F("Balance"));
         WriteBody(String(0.0, 1)+"dB");
       }
     break;
 
     case FF00:
-        WriteHeader("FF00");
+        WriteHeader(F("FF00"));
         WriteBody(String(ff00 & 0x1));
     break;
 
@@ -172,6 +176,21 @@ void FF00Changed(){
   SendFF00();
 }
 
+/*
+void SetAttImmidiate(SCPI_C commands, SCPI_P parameters, Stream& interface) {
+
+}
+*/
+
+void CheckButton(){
+  bool BUTTON_STATUS = digitalRead(BUTTON_IN);  
+  if (BUTTON_STATUS != LAST_BUTTON_STATUS){
+    if (BUTTON_STATUS == LOW) ButtonPressed();
+    else ButtonReleased();
+  }
+  LAST_BUTTON_STATUS = BUTTON_STATUS; 
+}
+
 void setup() {
   
   Serial.begin( 9600 );
@@ -193,11 +212,23 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(RE_IN1), checkPosition, CHANGE);
   attachInterrupt(digitalPinToInterrupt(RE_IN2), checkPosition, CHANGE);
-  
+
+  //myParser.SetCommandTreeBase(F("ATT"));
+  //myParser.RegisterCommand(F(":IMMidiate"), &SetAttImmidiate);
+
   SPI.begin();
+ 
+  //MsTimer2::set(20, CheckButton);
+  //MsTimer2::start();
+
  } 
 
 void loop() {
+  /*
+  myParser.Execute(char *message, Stream &interface)
+  */
+
+  
   delay(10);
   bool BUTTON_STATUS = digitalRead(BUTTON_IN);  
   if (BUTTON_STATUS != LAST_BUTTON_STATUS){
@@ -205,6 +236,7 @@ void loop() {
     else ButtonReleased();
   }
   LAST_BUTTON_STATUS = BUTTON_STATUS; 
+  
 
   int newPos = encoder->getPosition();
   switch (myMode){
