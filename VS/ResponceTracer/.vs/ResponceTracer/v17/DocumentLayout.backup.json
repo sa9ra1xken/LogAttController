@@ -27,15 +27,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "ResponceTracer",
+              "Title": "ResponceTracer.csproj",
               "DocumentMoniker": "C:\\Users\\takaaki\\git\\LogAttController\\VS\\ResponceTracer\\ResponceTracer.csproj",
               "RelativeDocumentMoniker": "ResponceTracer.csproj",
               "ToolTip": "C:\\Users\\takaaki\\git\\LogAttController\\VS\\ResponceTracer\\ResponceTracer.csproj",
               "RelativeToolTip": "ResponceTracer.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-09-09T05:25:08.279Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-09T05:25:08.279Z"
             },
             {
               "$type": "Document",
@@ -46,8 +45,7 @@
               "ToolTip": "C:\\Users\\takaaki\\git\\LogAttController\\VS\\ResponceTracer\\MainWindow.xaml",
               "RelativeToolTip": "MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-09-09T01:28:12.681Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-09T01:28:12.681Z"
             },
             {
               "$type": "Document",
@@ -55,8 +53,8 @@
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\takaaki\\git\\LogAttController\\VS\\ResponceTracer\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\takaaki\\git\\LogAttController\\VS\\ResponceTracer\\MainWindow.xaml.cs*",
-              "RelativeToolTip": "MainWindow.xaml.cs*",
+              "ToolTip": "C:\\Users\\takaaki\\git\\LogAttController\\VS\\ResponceTracer\\MainWindow.xaml.cs",
+              "RelativeToolTip": "MainWindow.xaml.cs",
               "ViewState": "AgIAAGkAAAAAAAAAAAAYwHQAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-09T01:28:06.777Z",
