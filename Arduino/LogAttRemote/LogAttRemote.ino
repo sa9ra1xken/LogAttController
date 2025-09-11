@@ -58,6 +58,7 @@ void setup(){
   myParser.SetCommandTreeBase(F("ATT"));
   myParser.RegisterCommand(F(":IMMidiate"), &SetAttImmidiate);
   Serial.begin( 9600 );
+  pinMode(SS, OUTPUT);
   SPI.begin();
 }
 

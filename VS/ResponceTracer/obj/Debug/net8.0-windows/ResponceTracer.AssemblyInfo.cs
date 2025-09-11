@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ResponceTracer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e2aac9e98f1803ae6921a74d45d9cf2a8bda8400")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+421a71f5608cbdec1fbfbb627c791bd3e997f748")]
 [assembly: System.Reflection.AssemblyProductAttribute("ResponceTracer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ResponceTracer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

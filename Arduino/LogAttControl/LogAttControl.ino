@@ -20,6 +20,7 @@ RotaryEncoder *encoder = nullptr;
 bool LAST_BUTTON_STATUS;
 
 SPISettings mySPISettings = SPISettings(8000000, LSBFIRST, SPI_MODE0);
+//#define CS 10
 
 //SCPI_Parser myParser;
 
@@ -100,7 +101,6 @@ void SendAttenuaion(){
   digitalWrite(SS, LOW);
   SPI.transfer(~data_right);
   SPI.transfer(~data_left);
-    
   digitalWrite(SS, HIGH);
   SPI.endTransaction();
 
@@ -216,6 +216,8 @@ void setup() {
   //myParser.SetCommandTreeBase(F("ATT"));
   //myParser.RegisterCommand(F(":IMMidiate"), &SetAttImmidiate);
 
+
+  pinMode(SS, OUTPUT);
   SPI.begin();
  
   //MsTimer2::set(20, CheckButton);
