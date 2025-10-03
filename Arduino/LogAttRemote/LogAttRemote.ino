@@ -14,7 +14,6 @@ SPISettings mySPISettings = SPISettings(8000000, LSBFIRST, SPI_MODE0);
 
 SCPI_Parser myParser;
 
-
 void WriteHeader(String str) {
   display.setCursor(0, 0);
   display.setTextSize(2);
@@ -32,10 +31,6 @@ void WriteFooter(String str) {
   display.setTextSize(2);
   display.print(str);
 }
-
-
-
-
 
 byte reverseByte(byte b) {
   byte reversedB = 0;

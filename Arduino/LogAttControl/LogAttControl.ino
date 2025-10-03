@@ -13,9 +13,13 @@ const int SCREEN_HEIGHT = 64;     //ディスプレイのサイズ指定
 const int SCREEN_ADDRESS = 0x3C;  //I2Cのアドレス指定
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
+#include <IRremote.hpp>
+
+#define IR_RECEIVE_PIN 0
 #define RE_IN1 2
 #define RE_IN2 3
 #define BUTTON_IN 7
+
 RotaryEncoder* encoder = nullptr;
 volatile bool LAST_BUTTON_STATUS;
 
@@ -103,12 +107,13 @@ void Show() {
 void VolumeChanged() {
   if (volume > 0) {
     volume = 0;
-    encoder->setPosition(volume);
+    //encoder->setPosition(volume);
   }
   if (volume < -255) {
     volume = -255;
-    encoder->setPosition(volume);
+    //encoder->setPosition(volume);
   }
+  encoder->setPosition(volume);
   Show();
 
   int left = volume;
@@ -212,6 +217,8 @@ void setup() {
   ButtonReleased = false;
  
   timer.begin(20 /* msec cycle */, OnTimerExpired);
+
+  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 }
 
 void OnButtonPressed() {
@@ -231,6 +238,14 @@ void OnButtonReleased() {
   Show();
 }
 
+enum IRActionm {
+  DECREMENT,
+  INCREMENT,
+  NONE
+};
+
+IRActionm LastIRAction = NONE;
+
 void loop() {
   if (Serial.available()>0){
     myParser.ProcessInput(Serial, "\n");
@@ -243,6 +258,7 @@ void loop() {
     ButtonReleased = false;
     OnButtonReleased();
   }
+ 
   int newPos = encoder->getPosition();
   switch (myMode) {
     case VOLUME:
@@ -258,4 +274,55 @@ void loop() {
       }
       break;
   }
+
+  if (IrReceiver.decode()) {
+
+        /*
+         * Print a summary of received data
+         */
+        if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+            Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
+            // We have an unknown protocol here, print extended info
+            IrReceiver.printIRResultRawFormatted(&Serial, true);
+            IrReceiver.resume(); // Do it here, to preserve raw data for printing with printIRResultRawFormatted()
+        } else {
+            IrReceiver.resume(); // Early enable receiving of the next IR frame
+
+            IrReceiver.printIRResultShort(&Serial);
+            IrReceiver.printIRSendUsage(&Serial);
+        }
+        Serial.println();
+
+        /*
+         * Finally, check the received data and perform actions according to the received command
+         */
+        if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) {
+            Serial.println(F("Repeat received. Here you can repeat the same action as before."));
+            switch (LastIRAction){
+              case DECREMENT:
+                volume --;
+                VolumeChanged();
+                break;
+              case INCREMENT:
+                volume ++;
+                VolumeChanged();
+                break;
+            }
+        } else {
+            if (IrReceiver.decodedIRData.command == 0x15) {
+                Serial.println(F("Received command 0x15."));
+                volume --;
+                VolumeChanged();
+                LastIRAction = DECREMENT;
+            } else if (IrReceiver.decodedIRData.command == 0x09) {
+                Serial.println(F("Received command 0x09."));
+                volume ++;
+                VolumeChanged();
+                LastIRAction = INCREMENT;
+            }
+        }
+    }
+
+
+
 }
