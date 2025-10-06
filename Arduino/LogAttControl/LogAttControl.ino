@@ -62,7 +62,7 @@ void WriteFooter(String str) {
 
 void SendAttenuaion(int left, int right) {
 
-  Serial.println(String(left)+"/"+String(right)); 
+  Serial.println(String(left) + "/" + String(right));
 
   byte data_right = swapBits(-right, 5, 7);
   byte data_left = swapBits(reverseByte(-left), 0, 2);
@@ -76,7 +76,7 @@ void SendAttenuaion(int left, int right) {
 }
 
 void Show() {
-  
+
   Serial.write("show\n");
 
   display.clearDisplay();
@@ -155,10 +155,10 @@ void SetAttImmidiate(SCPI_C commands, SCPI_P parameters, Stream& interface) {
   int left;
   int right;
   if (parameters.Size() <= 0) return;
-  left = - constrain(String(parameters[0]).toInt(), 0, 255);
+  left = -constrain(String(parameters[0]).toInt(), 0, 255);
   right = left;
   if (parameters.Size() > 1) {
-    right = - constrain(String(parameters[1]).toInt(), 0, 255);
+    right = -constrain(String(parameters[1]).toInt(), 0, 255);
   }
 
   display.clearDisplay();
@@ -169,7 +169,6 @@ void SetAttImmidiate(SCPI_C commands, SCPI_P parameters, Stream& interface) {
   display.display();
 
   SendAttenuaion(left, right);
-
 }
 
 volatile bool ButtonPressed;
@@ -215,16 +214,13 @@ void setup() {
 
   ButtonPressed = false;
   ButtonReleased = false;
- 
+
   timer.begin(20 /* msec cycle */, OnTimerExpired);
 
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
 }
 
-void OnButtonPressed() {
-}
-
-void OnButtonReleased() {
+void ToggleModes() {
   switch (myMode) {
     case VOLUME:
       myMode = BALANCE;
@@ -238,27 +234,81 @@ void OnButtonReleased() {
   Show();
 }
 
-enum IRActionm {
-  DECREMENT,
-  INCREMENT,
-  NONE
-};
+void OnButtonPressed() {
+  ButtonPressed = false;
+}
 
-IRActionm LastIRAction = NONE;
+void OnButtonReleased() {
+  ButtonReleased = false;
+  /*switch (myMode) {
+    case VOLUME:
+      myMode = BALANCE;
+      encoder->setPosition(balance);
+      break;
+    case BALANCE:
+      myMode = VOLUME;
+      encoder->setPosition(volume);
+      break;
+  }*/
+  ToggleModes();
+  Show();
+}
+
+//httpsja.aliexpress.comitem1005008599583899.htmlspm=a2g0o.order_list.order_list_main.12.4acf585ayYGnBV&gatewayAdapt=glo2jpn
+
+void HandleIR() {
+  if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+    Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
+    IrReceiver.printIRResultRawFormatted(&Serial, true);
+    IrReceiver.resume();
+  } else {
+    IrReceiver.resume();
+    IrReceiver.printIRResultShort(&Serial);
+    //IrReceiver.printIRSendUsage(&Serial);
+  }
+  Serial.println();
+
+  if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) {
+    switch (IrReceiver.decodedIRData.command) {
+      case 0x15:
+        Serial.println(F("Repeated command 0x15."));
+        volume--;
+        VolumeChanged();
+        break;
+      case 0x09:
+        Serial.println(F("Repeated command 0x09."));
+        volume++;
+        VolumeChanged();
+        break;
+    }
+
+  } else {
+    switch (IrReceiver.decodedIRData.command) {
+      case 0x15:
+        Serial.println(F("Received command 0x15."));
+        volume--;
+        VolumeChanged();
+        break;
+      case 0x09:
+        Serial.println(F("Received command 0x09."));
+        volume++;
+        VolumeChanged();
+        break;
+      case 0x46:
+        Serial.println(F("Received command 0x46."));
+        ToggleModes();
+        break;
+    }
+  }
+}
+
 
 void loop() {
-  if (Serial.available()>0){
-    myParser.ProcessInput(Serial, "\n");
-  }
-  if (ButtonPressed){
-    ButtonPressed = false;
-    OnButtonPressed();
-  }
-  if (ButtonReleased){
-    ButtonReleased = false;
-    OnButtonReleased();
-  }
- 
+
+  if (Serial.available() > 0) myParser.ProcessInput(Serial, "\n");
+  if (ButtonPressed) OnButtonPressed();
+  if (ButtonReleased) OnButtonReleased();
+
   int newPos = encoder->getPosition();
   switch (myMode) {
     case VOLUME:
@@ -275,54 +325,5 @@ void loop() {
       break;
   }
 
-  if (IrReceiver.decode()) {
-
-        /*
-         * Print a summary of received data
-         */
-        if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-            Serial.println(F("Received noise or an unknown (or not yet enabled) protocol"));
-            // We have an unknown protocol here, print extended info
-            IrReceiver.printIRResultRawFormatted(&Serial, true);
-            IrReceiver.resume(); // Do it here, to preserve raw data for printing with printIRResultRawFormatted()
-        } else {
-            IrReceiver.resume(); // Early enable receiving of the next IR frame
-
-            IrReceiver.printIRResultShort(&Serial);
-            IrReceiver.printIRSendUsage(&Serial);
-        }
-        Serial.println();
-
-        /*
-         * Finally, check the received data and perform actions according to the received command
-         */
-        if (IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT) {
-            Serial.println(F("Repeat received. Here you can repeat the same action as before."));
-            switch (LastIRAction){
-              case DECREMENT:
-                volume --;
-                VolumeChanged();
-                break;
-              case INCREMENT:
-                volume ++;
-                VolumeChanged();
-                break;
-            }
-        } else {
-            if (IrReceiver.decodedIRData.command == 0x15) {
-                Serial.println(F("Received command 0x15."));
-                volume --;
-                VolumeChanged();
-                LastIRAction = DECREMENT;
-            } else if (IrReceiver.decodedIRData.command == 0x09) {
-                Serial.println(F("Received command 0x09."));
-                volume ++;
-                VolumeChanged();
-                LastIRAction = INCREMENT;
-            }
-        }
-    }
-
-
-
+  if (IrReceiver.decode()) HandleIR();
 }
