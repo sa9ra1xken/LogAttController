@@ -13,6 +13,7 @@ const int SCREEN_HEIGHT = 64;     //ディスプレイのサイズ指定
 const int SCREEN_ADDRESS = 0x3C;  //I2Cのアドレス指定
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
+#define DECODE_NEC
 #include <IRremote.hpp>
 
 #define IR_RECEIVE_PIN 0
