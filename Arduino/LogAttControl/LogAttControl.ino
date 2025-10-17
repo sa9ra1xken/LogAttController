@@ -7,19 +7,30 @@
 #include "bit_manipulation.h"
 #include <Vrekrer_scpi_parser.h>
 #include "CBTimer.h"
+#include <EEPROM.h>
 
 const int SCREEN_WIDTH = 128;     //ディスプレイのサイズ指定
 const int SCREEN_HEIGHT = 64;     //ディスプレイのサイズ指定
 const int SCREEN_ADDRESS = 0x3C;  //I2Cのアドレス指定
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire);
 
-#define DECODE_NEC
-#include <IRremote.hpp>
-
-#define IR_RECEIVE_PIN 0
+#define IR_38K_PIN 0
+#define IR_455K_PIN 1
 #define RE_IN1 2
 #define RE_IN2 3
 #define BUTTON_IN 7
+
+#define DECODE_NEC
+//#define DECODE_BEO
+//#define USE_THRESHOLD_DECODER 
+// Mode 1: Mode with gaps between frames
+// Do NOT define ENABLE_BEO_WITHOUT_FRAME_GAP and set RECORD_GAP_MICROS to at least 16000 to accept the unusually long 3. start space
+// Can only receive single messages. Back to back repeats will result in overflow
+// Mode 2: Break at start mode
+// Define ENABLE_BEO_WITHOUT_FRAME_GAP and set RECORD_GAP_MICROS to less than 15000
+#include <IRremote.hpp>
+
+//#include "IrBeo4.h"
 
 RotaryEncoder* encoder = nullptr;
 volatile bool LAST_BUTTON_STATUS;
@@ -105,16 +116,20 @@ void Show() {
   display.display();
 }
 
+const int address_of_volume = 0;
+const int address_of_balance = address_of_volume + sizeof(volume);
+
 void VolumeChanged() {
   if (volume > 0) {
     volume = 0;
-    //encoder->setPosition(volume);
   }
   if (volume < -255) {
     volume = -255;
-    //encoder->setPosition(volume);
   }
   encoder->setPosition(volume);
+
+  EEPROM.put(address_of_volume, volume);
+
   Show();
 
   int left = volume;
@@ -132,12 +147,14 @@ void VolumeChanged() {
 void BalanceChanged() {
   if (balance > 50) {
     balance = 50;
-    encoder->setPosition(balance);
   }
   if (balance < -50) {
     balance = -50;
-    encoder->setPosition(balance);
   }
+  encoder->setPosition(balance);
+
+  EEPROM.put(address_of_balance, balance);   
+
   Show();
 
   int left = volume;
@@ -184,9 +201,11 @@ void OnTimerExpired() {
   LAST_BUTTON_STATUS = BUTTON_STATUS;
 }
 
-
 void setup() {
 
+  EEPROM.get(address_of_volume, volume);
+  EEPROM.get(address_of_balance, balance);
+  
   Serial.begin(9600);
 
   display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS);
@@ -218,7 +237,9 @@ void setup() {
 
   timer.begin(20 /* msec cycle */, OnTimerExpired);
 
-  IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+  IrReceiver.begin(IR_38K_PIN, DISABLE_LED_FEEDBACK);
+
+  VolumeChanged();
 }
 
 void ToggleModes() {
