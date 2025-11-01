@@ -5,12 +5,12 @@
       "Application": "Pcbnew",
       "Version": "9.0.6"
     },
-    "CreationDate": "2025-10-31T21:19:26+09:00"
+    "CreationDate": "2025-11-01T12:53:31+09:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
-      "Name": "LogAttSheild",
-      "GUID": "4c6f6741-7474-4536-9865-696c642e6b69",
+      "Name": "VolumeControlSheild",
+      "GUID": "566f6c75-6d65-4436-9f6e-74726f6c5368",
       "Revision": "rev?"
     },
     "Size": {
@@ -34,37 +34,37 @@
   ],
   "FilesAttributes": [
     {
-      "Path": "LogAttSheild-F_Cu.gbr",
+      "Path": "VolumeControlSheild-F_Cu.gbr",
       "FileFunction": "Copper,L1,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "LogAttSheild-B_Cu.gbr",
+      "Path": "VolumeControlSheild-B_Cu.gbr",
       "FileFunction": "Copper,L2,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "LogAttSheild-F_Silkscreen.gbr",
+      "Path": "VolumeControlSheild-F_Silkscreen.gbr",
       "FileFunction": "Legend,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "LogAttSheild-B_Silkscreen.gbr",
+      "Path": "VolumeControlSheild-B_Silkscreen.gbr",
       "FileFunction": "Legend,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "LogAttSheild-F_Mask.gbr",
+      "Path": "VolumeControlSheild-F_Mask.gbr",
       "FileFunction": "SolderMask,Top",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "LogAttSheild-B_Mask.gbr",
+      "Path": "VolumeControlSheild-B_Mask.gbr",
       "FileFunction": "SolderMask,Bot",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "LogAttSheild-Edge_Cuts.gbr",
+      "Path": "VolumeControlSheild-Edge_Cuts.gbr",
       "FileFunction": "Profile",
       "FilePolarity": "Positive"
     }
