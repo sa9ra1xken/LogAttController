@@ -7,7 +7,6 @@ class Screen {
 public:
   Screen(DisplayDriverIF& d);
   void init();
-  void hello();
   void writeHeader(String str);
   void writeBody(String str);
   void writeFooter(String str);
